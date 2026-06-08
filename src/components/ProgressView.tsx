@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  CSSProperties,
   KeyboardEvent,
   useEffect,
   useRef,
@@ -16,7 +17,8 @@ import {
   ProgressBarStyleId,
   ProgressItem,
   ProgressList,
-  calculateProgressPercent
+  calculateProgressPercent,
+  shouldCelebrateCompletion
 } from "../lib/progress";
 import { ChecklistItem } from "./ChecklistItem";
 import { ProgressBar } from "./ProgressBar";
@@ -52,9 +54,13 @@ export function ProgressView({
   const [actionMenuOpen, setActionMenuOpen] = useState(false);
   const [barPickerOpen, setBarPickerOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [confettiBurst, setConfettiBurst] = useState(0);
   const [editMode, setEditMode] = useState(false);
   const [goalsOpen, setGoalsOpen] = useState(false);
   const actionRef = useRef<HTMLDivElement>(null);
+  const previousProgressRef = useRef<{ listId: string; percent: number } | null>(
+    null
+  );
   const otherLists = lists.filter((list) => list.id !== selectedList.id);
   const completedCount = selectedList.items.filter((item) => item.completed).length;
   const selectedPercent = calculateProgressPercent(selectedList.items);
@@ -66,6 +72,22 @@ export function ProgressView({
     setEditMode(false);
     setGoalsOpen(false);
   }, [selectedList.id]);
+
+  useEffect(() => {
+    const previous = previousProgressRef.current;
+
+    if (
+      previous?.listId === selectedList.id &&
+      shouldCelebrateCompletion(previous.percent, selectedPercent)
+    ) {
+      setConfettiBurst((burst) => burst + 1);
+    }
+
+    previousProgressRef.current = {
+      listId: selectedList.id,
+      percent: selectedPercent
+    };
+  }, [selectedList.id, selectedPercent]);
 
   useEffect(() => {
     if (!actionMenuOpen && !confirmDeleteOpen) {
@@ -343,7 +365,53 @@ export function ProgressView({
       >
         main menu
       </motion.button>
+
+      <TinyConfetti burst={confettiBurst} />
     </motion.main>
+  );
+}
+
+const confettiParticles = [
+  { left: 8, delay: 0, drift: 22, size: 4 },
+  { left: 13, delay: 44, drift: -18, size: 3 },
+  { left: 18, delay: 92, drift: 14, size: 5 },
+  { left: 24, delay: 18, drift: -24, size: 4 },
+  { left: 29, delay: 116, drift: 18, size: 3 },
+  { left: 34, delay: 64, drift: -12, size: 5 },
+  { left: 39, delay: 148, drift: 26, size: 4 },
+  { left: 45, delay: 32, drift: -18, size: 3 },
+  { left: 50, delay: 84, drift: 10, size: 5 },
+  { left: 55, delay: 136, drift: -24, size: 4 },
+  { left: 60, delay: 52, drift: 18, size: 3 },
+  { left: 66, delay: 104, drift: -14, size: 5 },
+  { left: 71, delay: 14, drift: 24, size: 4 },
+  { left: 77, delay: 128, drift: -20, size: 3 },
+  { left: 83, delay: 72, drift: 16, size: 5 },
+  { left: 89, delay: 156, drift: -18, size: 4 },
+  { left: 94, delay: 38, drift: 12, size: 3 }
+];
+
+function TinyConfetti({ burst }: { burst: number }) {
+  if (burst === 0) {
+    return null;
+  }
+
+  return (
+    <div className="tiny-confetti" aria-hidden="true" key={burst}>
+      {confettiParticles.map((particle, index) => (
+        <span
+          key={`${burst}-${index}`}
+          style={
+            {
+              "--confetti-delay": `${particle.delay}ms`,
+              "--confetti-drift": `${particle.drift}px`,
+              "--confetti-left": `${particle.left}vw`,
+              "--confetti-size": `${particle.size}px`
+            } as CSSProperties
+          }
+        />
+      ))}
+    </div>
   );
 }
 

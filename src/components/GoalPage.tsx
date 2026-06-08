@@ -13,6 +13,8 @@ const criteria = [
   "favicon works",
   "goals collapse and expand works",
   "title remains visible",
+  "progress view is centered again",
+  "tiny confetti fires when a list reaches 100%",
   "x/x counter moved upward",
   "top three-dot menu works",
   "edit mode works",
@@ -47,7 +49,7 @@ export function GoalPage({ state }: GoalPageProps) {
         miniprogress
       </a>
       <section className="goal-card">
-        <p className="section-label">v1.1 self-check</p>
+        <p className="section-label">v1.2 self-check</p>
         <h1>/goal</h1>
         <p className="goal-summary">
           current state: {state.progressLists.length} saved list

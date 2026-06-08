@@ -13,6 +13,7 @@ import {
   renameProgressItem,
   setProgressBarStyle,
   setProgressItemSchedule,
+  shouldCelebrateCompletion,
   toggleProgressItem
 } from "./progress";
 
@@ -25,6 +26,14 @@ describe("progress list behavior", () => {
     ]);
 
     expect(percent).toBe(67);
+  });
+
+  it("celebrates only when progress crosses into complete", () => {
+    expect(shouldCelebrateCompletion(80, 100)).toBe(true);
+    expect(shouldCelebrateCompletion(null, 100)).toBe(false);
+    expect(shouldCelebrateCompletion(100, 100)).toBe(false);
+    expect(shouldCelebrateCompletion(100, 80)).toBe(false);
+    expect(shouldCelebrateCompletion(40, 60)).toBe(false);
   });
 
   it("uses five lowercase placeholder steps when custom list has no items", () => {

@@ -1022,10 +1022,10 @@ input::placeholder {
 }
 
 .progress-shell {
-  align-content: start;
-  gap: clamp(12px, 2.8vh, 18px);
-  padding-top: clamp(26px, 5vh, 44px);
-  padding-bottom: 78px;
+  align-content: center;
+  gap: 18px;
+  padding-top: 72px;
+  padding-bottom: 72px;
 }
 
 .brand-title--progress {
@@ -1311,6 +1311,44 @@ input::placeholder {
   text-align: center;
 }
 
+.tiny-confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tiny-confetti span {
+  position: absolute;
+  top: -12px;
+  left: var(--confetti-left);
+  width: var(--confetti-size);
+  height: calc(var(--confetti-size) * 1.55);
+  border-radius: 999px;
+  background: var(--green);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--green) 32%, transparent);
+  opacity: 0;
+  transform: translate3d(0, -12px, 0) rotate(0deg) scale(0.82);
+  animation: tiny-confetti-fall 1240ms var(--ease-out) forwards;
+  animation-delay: var(--confetti-delay);
+}
+
+.tiny-confetti span:nth-child(3n) {
+  width: calc(var(--confetti-size) * 0.75);
+  height: calc(var(--confetti-size) * 0.75);
+  background: color-mix(in srgb, var(--text) 42%, transparent);
+  box-shadow: none;
+}
+
+.tiny-confetti span:nth-child(4n) {
+  background: color-mix(in srgb, var(--green) 62%, var(--panel));
+}
+
+.tiny-confetti span:nth-child(5n) {
+  border-radius: 2px;
+}
+
 .picker-popover {
   right: 0;
   bottom: calc(100% + 9px);
@@ -1569,9 +1607,30 @@ input::placeholder {
   }
 }
 
+@keyframes tiny-confetti-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -12px, 0) rotate(0deg) scale(0.82);
+  }
+
+  12% {
+    opacity: 0.78;
+  }
+
+  72% {
+    opacity: 0.48;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--confetti-drift), 100dvh, 0) rotate(220deg) scale(0.9);
+  }
+}
+
 @media (max-width: 720px) {
   .progress-shell {
-    padding-top: 34px;
+    padding-top: 62px;
+    padding-bottom: 88px;
   }
 
   .brand-title--progress {
@@ -1620,7 +1679,12 @@ input::placeholder {
 
 @media (prefers-reduced-motion: reduce) {
   .progress-bar--diagonal-stripe .progress-bar__fill,
-  .progress-bar--chevron .progress-bar__fill {
+  .progress-bar--chevron .progress-bar__fill,
+  .tiny-confetti span {
     animation: none;
+  }
+
+  .tiny-confetti {
+    display: none;
   }
 }

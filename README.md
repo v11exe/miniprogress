@@ -4,6 +4,14 @@ miniprogress is a tiny, sleek progress tracker for exams, seasons, habits, proje
 
 the app is static Vite + React + TypeScript. it uses `localStorage` only for progress lists, checklist completion, selected list, theme, progress bar styles, and scheduled auto-complete dates.
 
+## v1.2
+
+v1.2 adds:
+
+- restored centered progress-view placement
+- a tiny, minimal confetti burst when a list reaches 100%
+- updated release metadata and `/goal` self-check wording
+
 ## v1.1
 
 v1.1 adds:
@@ -61,4 +69,4 @@ visit:
 /goal
 ```
 
-the `/goal` page lists the v1.1 acceptance criteria and renders every progress bar style at 64% for quick visual checking.
+the `/goal` page lists the v1.2 acceptance criteria and renders every progress bar style at 64% for quick visual checking.

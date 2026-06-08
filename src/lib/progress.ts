@@ -132,6 +132,13 @@ export function calculateProgressPercent(items: ProgressItem[]): number {
   return Math.round((completed / items.length) * 100);
 }
 
+export function shouldCelebrateCompletion(
+  previousPercent: number | null,
+  nextPercent: number
+): boolean {
+  return previousPercent !== null && previousPercent < 100 && nextPercent === 100;
+}
+
 export function createProgressList(input: CreateProgressInput): ProgressList {
   const normalizedLabels = input.itemLabels.map(normalizeLabel).filter(Boolean);
   const labels = normalizedLabels.length > 0 ? normalizedLabels : placeholderLabels;
