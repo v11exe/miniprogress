@@ -10,27 +10,34 @@ type GoalPageProps = {
 };
 
 const criteria = [
-  "favicon works",
-  "goals collapse and expand works",
-  "title remains visible",
-  "progress view is centered again",
-  "tiny confetti fires when a list reaches 100%",
-  "x/x counter moved upward",
-  "top three-dot menu works",
-  "edit mode works",
-  "done editing works",
-  "delete list works",
-  "delete goal works",
-  "rename goal works",
-  "add goal works",
-  "goal auto-complete date/time works",
-  "progress bar style picker works in create mode",
-  "progress bar style picker works in edit mode",
-  "all 10 progress bar styles render at 64% preview",
-  "selected progress bar style persists",
-  "create-your-own animation no longer full-fades/remounts",
-  "localStorage migration preserves v1.0 data",
-  "dark/light mode still works",
+  "responsive tested at all required viewports",
+  "mobile title no longer compresses",
+  "progress view works on narrow screens",
+  "Party.js installed and used",
+  "old celebration system removed/replaced",
+  "centered completion burst works",
+  "progress bar glow/pulse works",
+  "background-click burst works only when focused list is complete",
+  "background-click burst does not trigger on buttons/inputs/dropdowns",
+  "reduced motion disables particles",
+  "share preset appears in dropdown",
+  "share screen works",
+  "KV short link POST endpoint implemented",
+  "KV preset GET endpoint implemented",
+  "KV failure fallback works",
+  "encoded link import works",
+  "copy code works",
+  "export JSON works",
+  "paste code import works",
+  "file import works",
+  "/p/:id route works",
+  "/import#data=... route works",
+  "import preview validates data",
+  "import preview shows already completed goals from past scheduled times",
+  "imported list receives fresh IDs",
+  "localStorage persists imported lists",
+  "README documents Cloudflare KV setup",
+  "visible version says v1.3",
   "build passes",
   "no console errors"
 ];
@@ -49,7 +56,7 @@ export function GoalPage({ state }: GoalPageProps) {
         miniprogress
       </a>
       <section className="goal-card">
-        <p className="section-label">v1.2 self-check</p>
+        <p className="section-label">v1.3 self-check</p>
         <h1>/goal</h1>
         <p className="goal-summary">
           current state: {state.progressLists.length} saved list

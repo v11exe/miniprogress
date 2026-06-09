@@ -1,0 +1,10 @@
+name = "miniprogress"
+compatibility_date = "2026-06-09"
+pages_build_output_dir = "dist"
+
+# Cloudflare Pages Functions preset short links use this KV binding.
+# Replace these placeholders in the Cloudflare dashboard or with real IDs locally.
+[[kv_namespaces]]
+binding = "PRESETS_KV"
+id = "replace-with-production-kv-id"
+preview_id = "replace-with-preview-kv-id"

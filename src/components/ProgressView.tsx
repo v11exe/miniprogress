@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  CSSProperties,
   KeyboardEvent,
+  PointerEvent as ReactPointerEvent,
   useEffect,
   useRef,
   useState
@@ -13,6 +13,7 @@ import {
   rowItem,
   spring
 } from "../lib/motion";
+import { useCelebration } from "../hooks/useCelebration";
 import {
   ProgressBarStyleId,
   ProgressItem,
@@ -23,6 +24,7 @@ import {
 import { ChecklistItem } from "./ChecklistItem";
 import { ProgressBar } from "./ProgressBar";
 import { ProgressBarPicker } from "./ProgressBarPicker";
+import { SharePresetModal } from "./SharePresetModal";
 
 type ProgressViewProps = {
   lists: ProgressList[];
@@ -54,10 +56,12 @@ export function ProgressView({
   const [actionMenuOpen, setActionMenuOpen] = useState(false);
   const [barPickerOpen, setBarPickerOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
-  const [confettiBurst, setConfettiBurst] = useState(0);
+  const [shareOpen, setShareOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [goalsOpen, setGoalsOpen] = useState(false);
   const actionRef = useRef<HTMLDivElement>(null);
+  const barWrapRef = useRef<HTMLDivElement>(null);
+  const { backgroundBurst, completionBurst } = useCelebration();
   const previousProgressRef = useRef<{ listId: string; percent: number } | null>(
     null
   );
@@ -69,6 +73,7 @@ export function ProgressView({
     setActionMenuOpen(false);
     setBarPickerOpen(false);
     setConfirmDeleteOpen(false);
+    setShareOpen(false);
     setEditMode(false);
     setGoalsOpen(false);
   }, [selectedList.id]);
@@ -80,14 +85,14 @@ export function ProgressView({
       previous?.listId === selectedList.id &&
       shouldCelebrateCompletion(previous.percent, selectedPercent)
     ) {
-      setConfettiBurst((burst) => burst + 1);
+      window.setTimeout(() => completionBurst(barWrapRef.current), 680);
     }
 
     previousProgressRef.current = {
       listId: selectedList.id,
       percent: selectedPercent
     };
-  }, [selectedList.id, selectedPercent]);
+  }, [completionBurst, selectedList.id, selectedPercent]);
 
   useEffect(() => {
     if (!actionMenuOpen && !confirmDeleteOpen) {
@@ -122,6 +127,20 @@ export function ProgressView({
     setActionMenuOpen(false);
   }
 
+  function sharePreset() {
+    setShareOpen(true);
+    setActionMenuOpen(false);
+  }
+
+  function handleBackgroundPointerDown(event: ReactPointerEvent<HTMLElement>) {
+    if (selectedPercent !== 100) return;
+    const target = event.target as HTMLElement;
+    if (target.closest("button,input,textarea,a,select,label,[role='button'],.focus-card,.mini-list,.main-menu-button,.modal-backdrop,.tiny-menu,.confirm-popover,.schedule-popover,.bar-picker")) {
+      return;
+    }
+    backgroundBurst(event.nativeEvent);
+  }
+
   return (
     <motion.main
       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -129,6 +148,7 @@ export function ProgressView({
       exit={{ opacity: 0, y: -10, scale: 0.985 }}
       initial={{ opacity: 0, y: 18, scale: 0.982 }}
       transition={pageTransition}
+      onPointerDown={handleBackgroundPointerDown}
     >
       <motion.h1
         animate={{ opacity: 1, y: 0 }}
@@ -207,6 +227,9 @@ export function ProgressView({
                   <button onClick={startEditing} type="button">
                     edit
                   </button>
+                  <button onClick={sharePreset} type="button">
+                    share preset
+                  </button>
                   <button
                     className="danger-row"
                     onClick={() => setConfirmDeleteOpen(true)}
@@ -249,7 +272,7 @@ export function ProgressView({
           </div>
         </div>
 
-        <div className="bar-edit-wrap">
+        <div className="bar-edit-wrap" ref={barWrapRef}>
           <ProgressBar
             onClick={editMode ? () => setBarPickerOpen((open) => !open) : undefined}
             percent={selectedPercent}
@@ -366,52 +389,10 @@ export function ProgressView({
         main menu
       </motion.button>
 
-      <TinyConfetti burst={confettiBurst} />
+      <AnimatePresence>
+        {shareOpen && <SharePresetModal list={selectedList} onClose={() => setShareOpen(false)} />}
+      </AnimatePresence>
     </motion.main>
-  );
-}
-
-const confettiParticles = [
-  { left: 8, delay: 0, drift: 22, size: 4 },
-  { left: 13, delay: 44, drift: -18, size: 3 },
-  { left: 18, delay: 92, drift: 14, size: 5 },
-  { left: 24, delay: 18, drift: -24, size: 4 },
-  { left: 29, delay: 116, drift: 18, size: 3 },
-  { left: 34, delay: 64, drift: -12, size: 5 },
-  { left: 39, delay: 148, drift: 26, size: 4 },
-  { left: 45, delay: 32, drift: -18, size: 3 },
-  { left: 50, delay: 84, drift: 10, size: 5 },
-  { left: 55, delay: 136, drift: -24, size: 4 },
-  { left: 60, delay: 52, drift: 18, size: 3 },
-  { left: 66, delay: 104, drift: -14, size: 5 },
-  { left: 71, delay: 14, drift: 24, size: 4 },
-  { left: 77, delay: 128, drift: -20, size: 3 },
-  { left: 83, delay: 72, drift: 16, size: 5 },
-  { left: 89, delay: 156, drift: -18, size: 4 },
-  { left: 94, delay: 38, drift: 12, size: 3 }
-];
-
-function TinyConfetti({ burst }: { burst: number }) {
-  if (burst === 0) {
-    return null;
-  }
-
-  return (
-    <div className="tiny-confetti" aria-hidden="true" key={burst}>
-      {confettiParticles.map((particle, index) => (
-        <span
-          key={`${burst}-${index}`}
-          style={
-            {
-              "--confetti-delay": `${particle.delay}ms`,
-              "--confetti-drift": `${particle.drift}px`,
-              "--confetti-left": `${particle.left}vw`,
-              "--confetti-size": `${particle.size}px`
-            } as CSSProperties
-          }
-        />
-      ))}
-    </div>
   );
 }
 

@@ -1,8 +1,10 @@
 import { AnimatePresence, MotionConfig } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { GoalPage } from "./components/GoalPage";
+import { ImportPresetScreen } from "./components/ImportPresetScreen";
 import { MainMenu } from "./components/MainMenu";
 import { ProgressView } from "./components/ProgressView";
+import { installLayoutDiagnostics } from "./lib/layoutDiagnostics";
 import {
   AppState,
   ProgressBarStyleId,
@@ -26,7 +28,7 @@ import {
   type PresetId
 } from "./lib/progress";
 
-type View = "menu" | "progress";
+type View = "menu" | "progress" | "import";
 
 type BootState = {
   state: AppState;
@@ -34,12 +36,18 @@ type BootState = {
 };
 
 export default function App() {
+  useEffect(() => {
+    installLayoutDiagnostics();
+  }, []);
+
   const [boot] = useState<BootState>(() => {
     const state = loadAppState();
 
+    const importRoute = window.location.pathname.startsWith("/p/") || window.location.pathname === "/import";
+
     return {
       state,
-      view: state.progressLists.length > 0 ? "progress" : "menu"
+      view: importRoute ? "import" : state.progressLists.length > 0 ? "progress" : "menu"
     };
   });
   const [state, setState] = useState<AppState>(boot.state);
@@ -89,6 +97,11 @@ export default function App() {
       selectedProgressId: list.id
     }));
     setView("progress");
+  }
+
+  function importProgressList(list: ProgressList) {
+    window.history.replaceState(null, "", "/");
+    addProgressList(list);
   }
 
   function addPreset(presetId: PresetId) {
@@ -177,8 +190,22 @@ export default function App() {
             theme={state.theme}
             onCreate={addProgressList}
             onPreset={addPreset}
+            onImport={() => setView("import")}
             onReset={resetProgress}
             onResume={() => setView("progress")}
+            onThemeChange={setTheme}
+          />
+        )}
+        {view === "import" && (
+          <ImportPresetScreen
+            key="import"
+            mode={window.location.pathname.startsWith("/p/") || window.location.pathname === "/import" ? "route" : "manual"}
+            theme={state.theme}
+            onBack={() => {
+              window.history.replaceState(null, "", "/");
+              setView(state.progressLists.length > 0 ? "progress" : "menu");
+            }}
+            onImport={importProgressList}
             onThemeChange={setTheme}
           />
         )}
