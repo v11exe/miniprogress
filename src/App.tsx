@@ -4,6 +4,7 @@ import { GoalPage } from "./components/GoalPage";
 import { ImportPresetScreen } from "./components/ImportPresetScreen";
 import { MainMenu } from "./components/MainMenu";
 import { ProgressView } from "./components/ProgressView";
+import { installLayoutDiagnostics } from "./lib/layoutDiagnostics";
 import {
   AppState,
   ProgressBarStyleId,
@@ -35,6 +36,10 @@ type BootState = {
 };
 
 export default function App() {
+  useEffect(() => {
+    installLayoutDiagnostics();
+  }, []);
+
   const [boot] = useState<BootState>(() => {
     const state = loadAppState();
 
