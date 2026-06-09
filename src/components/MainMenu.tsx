@@ -26,6 +26,7 @@ type MainMenuProps = {
   theme: Theme;
   onCreate: (list: ProgressList) => void;
   onPreset: (presetId: PresetId) => void;
+  onImport: () => void;
   onReset: () => void;
   onResume: () => void;
   onThemeChange: (theme: Theme) => void;
@@ -36,6 +37,7 @@ export function MainMenu({
   theme,
   onCreate,
   onPreset,
+  onImport,
   onReset,
   onResume,
   onThemeChange
@@ -301,17 +303,24 @@ export function MainMenu({
           </motion.div>
         </motion.form>
 
-        {!createOpen && progressCount > 0 && (
+        {!createOpen && (
           <motion.div
             animate={{ opacity: 1, y: 0 }}
             className="menu-section menu-section--saved"
             initial={{ opacity: 0, y: 8 }}
             layout
           >
-            <RowButton meta={`${progressCount} saved`} onClick={onResume} title="view progress" />
-            <button className="text-control" onClick={onReset} type="button">
-              reset progress
+            {progressCount > 0 && (
+              <RowButton meta={`${progressCount} saved`} onClick={onResume} title="view progress" />
+            )}
+            <button className="text-control" onClick={onImport} type="button">
+              import preset
             </button>
+            {progressCount > 0 && (
+              <button className="text-control" onClick={onReset} type="button">
+                reset progress
+              </button>
+            )}
           </motion.div>
         )}
       </motion.section>
