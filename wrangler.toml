@@ -6,5 +6,4 @@ pages_build_output_dir = "dist"
 # Replace these placeholders in the Cloudflare dashboard or with real IDs locally.
 [[kv_namespaces]]
 binding = "PRESETS_KV"
-id = "replace-with-production-kv-id"
-preview_id = "replace-with-preview-kv-id"
+id = "a640fed9dcee47b687a5495741ef30d3"
